@@ -1,4 +1,4 @@
-import isEmpty from '@/js/base/isEmpty.js'
+import isEmpty from '@/common/base/isEmpty.js'
 var expect = require('chai').expect
 
 describe('非空函数验证,非空值为false', () => {

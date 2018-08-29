@@ -1,4 +1,4 @@
-import validate from '@/js/base/validate.js'
+import validate from '@/common/base/validate.js'
 var expect = require('chai').expect
 
 describe('测试校验类', () => {

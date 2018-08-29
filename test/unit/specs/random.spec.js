@@ -1,4 +1,4 @@
-import random from '@/js/base/random.js'
+import random from '@/common/base/random.js'
 var expect = require('chai').expect
 
 describe('随机数测试', () => {

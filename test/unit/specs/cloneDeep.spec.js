@@ -1,4 +1,4 @@
-import cloneDeep from '@/js/base/cloneDeep.js'
+import cloneDeep from '@/common/base/cloneDeep.js'
 var expect = require('chai').expect
 
 describe('测试深拷贝', () => {

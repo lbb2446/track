@@ -1,4 +1,4 @@
-import format from '@/js/base/format.js'
+import format from '@/common/base/format.js'
 var expect = require('chai').expect
 
 // 调整后根据新参和新方式再写用例

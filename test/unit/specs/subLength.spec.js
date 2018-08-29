@@ -1,4 +1,4 @@
-import subLength from '@/js/base/subLength.js'
+import subLength from '@/common/base/subLength.js'
 var expect = require('chai').expect
 
 describe('测试截取字符串', () => {
