@@ -259,7 +259,7 @@ window.onload = function () {
         // 操作系统/设备 JS引擎 浏览器 是否PC
       },
       d: {// system
-        v: '1.0', // 插件版本
+        v: '1.1', // 插件版本
         appid: 'a123'// 服务器注册的应用id
       }
       // location: {// 这部分可能是服务端获取的
