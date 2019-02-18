@@ -1,5 +1,5 @@
 {
-  "name": "lscommonfs",
+  "name": "happy-track",
   "version": "1.0.1",
   "description": "A Vue.js project",
   "author": "lbb2445 <814797346@qq.com>",
@@ -14,6 +14,7 @@
     "build": "node build/build.js"
   },
   "dependencies": {
+    "ua-device": "^0.1.10",
     "vue": "^2.5.2",
     "vue-router": "^3.0.1"
   },
