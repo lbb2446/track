@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <img src="./assets/logo.png">
+    debugger模式
     <router-view/>
   </div>
 </template>
