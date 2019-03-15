@@ -1,6 +1,6 @@
 {
   "name": "happy-track",
-  "version": "1.0.5",
+  "version": "1.0.9",
   "description": "A Vue.js project",
   "author": "lbb2445 <814797346@qq.com>",
   "main": "dist/happy-track.min.js",

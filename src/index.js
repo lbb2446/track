@@ -1,5 +1,5 @@
 function getRoute () {
-  return encodeURI(window.location.host + '|' + window.location.hash.replace('#', '@'))
+  return encodeURI(window.location.host + '' + window.location.hash.replace(/#/g, '@').replace(/&/g, '!'))
 }
 function getTime () {
   var d = new Date()
@@ -26,10 +26,10 @@ function getToken () {
 function htmlEncode (str) {
   var s = ''
   if (str.length === 0) return ''
-  s = str.replace(/&/g, '!;')
+  s = str.replace(/&/g, '!')
   // s = s.replace(/</g, '&lt;')
   // s = s.replace(/>/g, '&gt;')
-  s = s.replace(/#/g, '@;')
+  s = s.replace(/#/g, '@')
   // s = s.replace(/ /g, '&nbsp;')
   // s = s.replace(/\\'/g, '&#39;')
   // s = s.replace(/\\"/g, '&quot;')
@@ -38,7 +38,7 @@ function htmlEncode (str) {
 }
 class Collector {
   constructor ({message}) {
-    this.token = '123'
+    this.token = 'token'
     this.timeline1 = message
     this.message = message
     this.methods = {}
@@ -67,13 +67,17 @@ class Collector {
     this.message.send(type, {result: fn})
     // fn.call(this)
   }
+  outsend () {
+    this.message.outsend()
+  }
 }
 let Config = {
   url: 'http://47.99.132.211:10068/t2/c.jpg',
-  url1: 'http://47.99.132.211:10068/t1/c.jpg',
-  version: '1.0.4', // 插件版本
+  url1: 'http://47.99.132.211:10068/t1/c.jpg', //
+  url2: 'http://47.99.132.211:10068/leave/c.jpg', // 离开时
+  version: '1.0.7', // 插件版本
   appid: 'test',
-  uuid: 'none',
+  uuid: '',
   isdebugger: false
 }
 function Log (content) {
@@ -95,7 +99,7 @@ class Message {
   }
 
   sendInterval (type, obj) {
-    this.queue.push({type, ...obj, token: getToken(), datetime: getTime(), router: getRoute()})
+    this.queue.push({type, ...obj, token: getToken(), datetime: getTime(), router: getRoute(), appId: Config.appid})
     this.isupdate = true
   }
   init () {
@@ -105,6 +109,11 @@ class Message {
         this.isupdate = false
       }
     }, 10000)
+  }
+  outsend () {
+    let img = new Image()
+    img.src = Config.url2 + '?v=' + encodeURI(JSON.stringify({token: getToken(), datetime: getTime(), url: getRoute(), appId: Config.appid}))
+    this.queue = []
   }
   send () {
     let img = new Image()
@@ -165,7 +174,7 @@ function _init () {
       b: {// user
         date: formatDate(), // 本地时间戳
         title: document.title, // 需要读取到SPA的title
-        url: encodeURI(window.location.href.replace('#', '@')), // url会不会太长 到时候需要截取
+        url: getRoute(), // url会不会太长 到时候需要截取
         width: window.innerWidth,
         height: window.innerHeight,
         token: localStorage.getItem('lstoken')// 本地生成一个缓存，可以一直识别某用户
@@ -186,7 +195,7 @@ function _init () {
       d: {// system
         uuid: Config.uuid,
         v: Config.version, // 插件版本
-        appid: Config.appid// 服务器注册的应用id
+        appId: Config.appid// 服务器注册的应用id
       }
     }
     m('systeminfo', mixCode(info))
@@ -199,7 +208,7 @@ function _init () {
       // 'fetch', 'xmlhttprequest'
       let usefulType = ['script', 'css', 'link', 'img']
       if (usefulType.indexOf(item.initiatorType) > -1) {
-        templeObj.name = item.name.replace('#', '@')
+        templeObj.name = item.name.replace(/#/g, '@').replace(/&/g, '!')
         templeObj.nextHopProtocol = item.nextHopProtocol
         // dns查询耗时
         templeObj.dnsTime = item.domainLookupEnd - item.domainLookupStart
@@ -251,6 +260,7 @@ function _init () {
   })
   a.add('outpage', (m) => {
     window.onbeforeunload = function () {
+      a.outsend()
       // 把没上传的东西上传
       // 发起一次新的离开请求
     }

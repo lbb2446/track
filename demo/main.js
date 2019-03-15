@@ -3,7 +3,7 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
-import {track, init} from './index.js' // 有一个use方法和一个指令方法
+import {track, init} from '../src/index.js' // 有一个use方法和一个指令方法
 // 使用我们自己封装的第三方函数库
 // 开始偷取
 function addEvent (element, event, listener) {
@@ -28,7 +28,7 @@ Vue.directive('track', {
 })
 Vue.config.productionTip = false
 window.onload = () => {
-  init({uuid: 'lbb', appid: 'test2'})
+  init({uuid: 'lbb', appid: '7fa1e8ba0623405c9e494f63a17abf19'})
 }
 /* eslint-disable no-new */
 new Vue({
