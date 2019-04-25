@@ -1,8 +1,6 @@
 <template>
   <div class="hello">
-    <h1>{{ msg }}</h1>
-    <h2>Essential Links</h2>
-    在这个模式下 会提供对应的操作
+    <h2>随意点击元素</h2>
     <div v-track="'kbb'" style="height:500px;width:200px">1212</div>
 
     _________________
@@ -14,7 +12,7 @@ export default {
   name: 'HelloWorld',
   data () {
     return {
-      msg: 'Welcome to Your Vue.js App'
+      msg: ''
     }
   }
 }

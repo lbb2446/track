@@ -45,7 +45,6 @@ Using cdn: CDN有一个好处，永远是最新版本的，但是会占用一个
 //在main.js里
 import {init,track} from 'happy-track' // 有一个use方法和一个指令方法
 // 使用我们自己封装的第三方函数库
-// 开始偷取
 function addEvent (element, event, listener) {
   if (element.addEventListener) {
     element.addEventListener(event, listener, false)
@@ -55,6 +54,7 @@ function addEvent (element, event, listener) {
     element['on' + event] = listener
   }
 }
+//注册到vue内
 Vue.prototype.$track = track
 Vue.directive('track', {
   bind (el, binding) {
@@ -66,9 +66,12 @@ Vue.directive('track', {
     addEvent(el, 'click', function () {})
   }
 })
+/**
+ * 在组件内使用  v-track="dosomething" ,最后服务端会收到 directive:dosomething这样一个字段
+ * **/
 
-window.onload = () => {
-  init({uuid: 'lbb', appid: '7fa1e8ba0623405c9e494f63a17abf19'})
+window.onload = () => {//尽量绑定在onload事件上
+  init({uuid: 'helloworld', appid: '7fa1e8ba0623405c9e494f63a17abf19'})
 }
 ```
 ## License
