@@ -3,7 +3,7 @@ export default {
   url1: 'http://47.99.132.211:10068/t1/c.jpg', //
   track: 'http://47.99.132.211:10068/t1/a.jpg',
   url2: 'http://47.99.132.211:10068/leave/c.jpg', // 离开时
-  version: '1.0.10', // 插件版本
+  version: '1.0.12', // 插件版本
   appid: 'test',
   uuid: '',
   isdebugger: false

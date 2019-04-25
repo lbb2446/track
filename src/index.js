@@ -1,10 +1,11 @@
-import {getRoute, getToken, getTime, guid, htmlEncode} from './util/info'
+import {getRoute, guid, htmlEncode} from './util/info'
 import {formatDate} from './util/trans'
 import Config from './config'
 // import Message from './model/Message'
 // import Collector from './model/Collector'
 
 import schema from './util/schema'
+import Message from './model/Message'
 class Collector {
   constructor ({message}) {
     this.token = 'token'
@@ -23,7 +24,7 @@ class Collector {
     if (type === 'timeline') {
       fn(this.timeline1.sendInterval.bind(this.timeline1))
     } else if (type === 'firstload') {
-      fn(this.message.sendNoResult.bind(this))
+      fn(this.message.sendNoResult.bind(this.message))
     } else {
       fn(this.message.send)
     }
@@ -39,45 +40,6 @@ class Collector {
   }
 }
 
-class Message {
-  constructor ({config}) {
-    this.queue = []
-    this.isupdate = false
-    this.init()
-    this.config = config
-  }
-  sendNoResult (type, obj) {
-    let img = new Image()
-    img.src = this.config.url + '?v=' + encodeURI(JSON.stringify(obj))
-  }
-
-  sendInterval (type, obj) {
-    this.queue.push({type, ...obj, token: getToken(), datetime: getTime(), router: getRoute(), appId: this.config.appid})
-    this.isupdate = true
-  }
-  init () {
-    setInterval(() => {
-      if (this.isupdate === true) {
-        this.send()
-        this.isupdate = false
-      }
-    }, 10 * 1000)
-  }
-  outsend () {
-    let img = new Image()
-    img.src = this.config.url2 + '?v=' + encodeURI(JSON.stringify({token: getToken(), datetime: getTime(), url: getRoute(), appId: this.config.appid}))
-    this.queue = []
-  }
-  send () {
-    let img = new Image()
-    img.src = this.config.url1 + '?v=' + encodeURI(JSON.stringify(this.queue))
-    this.queue = []
-  }
-  track (key, value) {
-    let img = new Image()
-    img.src = this.config.track + '?v=' + encodeURI(JSON.stringify({token: getToken(), datetime: getTime(), url: getRoute(), appId: this.config.appid, [key]: value}))
-  }
-}
 let a = new Collector({config: Config, message: new Message({config: Config})})
 function _init () {
   a.add('firstload', (m) => {

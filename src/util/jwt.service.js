@@ -1,15 +1,15 @@
-const ID_TOKEN_KEY = "id_token";
+const ID_TOKEN_KEY = 'lstoken'
 
 export const getToken = () => {
-  return window.localStorage.getItem(ID_TOKEN_KEY);
-};
+  return window.localStorage.getItem(ID_TOKEN_KEY)
+}
 
 export const saveToken = token => {
-  window.localStorage.setItem(ID_TOKEN_KEY, token);
-};
+  window.localStorage.setItem(ID_TOKEN_KEY, token)
+}
 
 export const destroyToken = () => {
-  window.localStorage.removeItem(ID_TOKEN_KEY);
-};
+  window.localStorage.removeItem(ID_TOKEN_KEY)
+}
 
-export default { getToken, saveToken, destroyToken };
+export default { getToken, saveToken, destroyToken }
