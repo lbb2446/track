@@ -15,11 +15,13 @@ function addEvent (element, event, listener) {
     element['on' + event] = listener
   }
 }
+// console.log(require('./components/HelloWorld.vue'))
 Vue.prototype.$track = track
 Vue.directive('track', {
   bind (el, binding) {
     addEvent(el, 'click', () => {
-      track('directive', binding)
+      // console.log(binding.expression)
+      track('directive', binding.expression)
     })
   },
   unbind: function (el) {

@@ -3,7 +3,7 @@
     <h1>{{ msg }}</h1>
     <h2>Essential Links</h2>
     在这个模式下 会提供对应的操作
-    <div style="height:500px;width:200px"></div>
+    <div v-track="'kbb'" style="height:500px;width:200px">1212</div>
 
     _________________
   </div>

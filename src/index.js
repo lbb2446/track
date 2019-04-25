@@ -1,41 +1,10 @@
-function getRoute () {
-  return encodeURI(window.location.host + '' + window.location.hash.replace(/#/g, '@').replace(/&/g, '!'))
-}
-function getTime () {
-  var d = new Date()
-  return (
-    d.getFullYear() + '/' +
-    ('00' + (d.getMonth() + 1)).slice(-2) + '/' +
-    ('00' + d.getDate()).slice(-2) +
-    ' ' +
-    ('00' + d.getHours()).slice(-2) + ':' +
-    ('00' + d.getMinutes()).slice(-2) + ':' +
-    ('00' + d.getSeconds()).slice(-2)
-  )
-}
-function guid () {
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-    let r = Math.random() * 16 | 0
-    let v = c === 'x' ? r : (r & 0x3 | 0x8)
-    return v.toString(16)
-  })
-}
-function getToken () {
-  return localStorage.getItem('lstoken')
-}
-function htmlEncode (str) {
-  var s = ''
-  if (str.length === 0) return ''
-  s = str.replace(/&/g, '!')
-  // s = s.replace(/</g, '&lt;')
-  // s = s.replace(/>/g, '&gt;')
-  s = s.replace(/#/g, '@')
-  // s = s.replace(/ /g, '&nbsp;')
-  // s = s.replace(/\\'/g, '&#39;')
-  // s = s.replace(/\\"/g, '&quot;')
-  // s = s.replace(/\n/g, '<br>')
-  return s
-}
+import {getRoute, getToken, getTime, guid, htmlEncode} from './util/info'
+import {formatDate} from './util/trans'
+import Config from './config'
+// import Message from './model/Message'
+// import Collector from './model/Collector'
+
+import schema from './util/schema'
 class Collector {
   constructor ({message}) {
     this.token = 'token'
@@ -54,9 +23,8 @@ class Collector {
     if (type === 'timeline') {
       fn(this.timeline1.sendInterval.bind(this.timeline1))
     } else if (type === 'firstload') {
-      fn(this.message.sendNoResult)
+      fn(this.message.sendNoResult.bind(this))
     } else {
-      // console.warn(type, this)
       fn(this.message.send)
     }
   }
@@ -64,42 +32,27 @@ class Collector {
     fn(this.message.sendNoResult)
   }
   track (type, fn) {
-    this.message.send(type, {result: fn})
-    // fn.call(this)
+    this.message.track(type, fn)
   }
   outsend () {
     this.message.outsend()
   }
 }
-let Config = {
-  url: 'http://47.99.132.211:10068/t2/c.jpg',
-  url1: 'http://47.99.132.211:10068/t1/c.jpg', //
-  url2: 'http://47.99.132.211:10068/leave/c.jpg', // 离开时
-  version: '1.0.7', // 插件版本
-  appid: 'test',
-  uuid: '',
-  isdebugger: false
-}
-function Log (content) {
-  if (Config.isdebugger === true) {
-    console.log(content)
-  }
-}
 
-// 消息 考虑到在异步的时候可能会存在一些信息顺序的原因，后续可能改造成简单的队列
 class Message {
-  constructor () {
+  constructor ({config}) {
     this.queue = []
     this.isupdate = false
     this.init()
+    this.config = config
   }
   sendNoResult (type, obj) {
     let img = new Image()
-    img.src = Config.url + '?v=' + encodeURI(JSON.stringify(obj))
+    img.src = this.config.url + '?v=' + encodeURI(JSON.stringify(obj))
   }
 
   sendInterval (type, obj) {
-    this.queue.push({type, ...obj, token: getToken(), datetime: getTime(), router: getRoute(), appId: Config.appid})
+    this.queue.push({type, ...obj, token: getToken(), datetime: getTime(), router: getRoute(), appId: this.config.appid})
     this.isupdate = true
   }
   init () {
@@ -108,57 +61,41 @@ class Message {
         this.send()
         this.isupdate = false
       }
-    }, 10000)
+    }, 10 * 1000)
   }
   outsend () {
     let img = new Image()
-    img.src = Config.url2 + '?v=' + encodeURI(JSON.stringify({token: getToken(), datetime: getTime(), url: getRoute(), appId: Config.appid}))
+    img.src = this.config.url2 + '?v=' + encodeURI(JSON.stringify({token: getToken(), datetime: getTime(), url: getRoute(), appId: this.config.appid}))
     this.queue = []
   }
   send () {
     let img = new Image()
-    img.src = Config.url1 + '?v=' + encodeURI(JSON.stringify(this.queue))
+    img.src = this.config.url1 + '?v=' + encodeURI(JSON.stringify(this.queue))
     this.queue = []
   }
+  track (key, value) {
+    let img = new Image()
+    img.src = this.config.track + '?v=' + encodeURI(JSON.stringify({token: getToken(), datetime: getTime(), url: getRoute(), appId: this.config.appid, [key]: value}))
+  }
 }
-let a = new Collector({message: new Message()})
-
-function formatDate () {
-  var d = new Date()
-  return (
-    d.getFullYear() + '/' +
-    ('00' + (d.getMonth() + 1)).slice(-2) + '/' +
-    ('00' + d.getDate()).slice(-2) +
-    ' ' +
-    ('00' + d.getHours()).slice(-2) + ':' +
-    ('00' + d.getMinutes()).slice(-2) + ':' +
-    ('00' + d.getSeconds()).slice(-2)
-  )
-}
-
-// firstload 是否需要转换成常量  是否需要分成抽象的大类
-/**
- *
- *
- */
-function mixCode (object) {
-  return object
-}
+let a = new Collector({config: Config, message: new Message({config: Config})})
 function _init () {
   a.add('firstload', (m) => {
-    let timing = performance.timing
-    let start = timing.navigationStart
     let dnsTime = 0
     let tcpTime = 0
     let firstPaintTime = 0
     let domRenderTime = 0
     let loadTime = 0
+    if (typeof window.performance === 'function') {
+      let timing = performance.timing
+      let start = timing.navigationStart
 
-    dnsTime = timing.domainLookupEnd - timing.domainLookupStart
-    tcpTime = timing.connectEnd - timing.connectStart
-    firstPaintTime = timing.responseStart - start
-    domRenderTime = timing.domContentLoadedEventEnd - start
-    loadTime = timing.loadEventEnd - start
+      dnsTime = timing.domainLookupEnd - timing.domainLookupStart
+      tcpTime = timing.connectEnd - timing.connectStart
+      firstPaintTime = timing.responseStart - start
+      domRenderTime = timing.domContentLoadedEventEnd - start
+      loadTime = timing.loadEventEnd - start
+    }
     // DNS解析时间、TCP建立连接时间、首页白屏时间、dom渲染完成时间、页面onload时间等
     if (!localStorage.getItem('lstoken')) {
       localStorage.setItem('lstoken', guid())
@@ -198,31 +135,34 @@ function _init () {
         appId: Config.appid// 服务器注册的应用id
       }
     }
-    m('systeminfo', mixCode(info))
+    m('systeminfo', schema(info))
   })
   a.add('timeline', (m) => { // 含一些图片
     // let entryTimesList = []
-    let entryList = window.performance.getEntries()
-    entryList.forEach((item, index) => {
-      let templeObj = {}
-      // 'fetch', 'xmlhttprequest'
-      let usefulType = ['script', 'css', 'link', 'img']
-      if (usefulType.indexOf(item.initiatorType) > -1) {
-        templeObj.name = item.name.replace(/#/g, '@').replace(/&/g, '!')
-        templeObj.nextHopProtocol = item.nextHopProtocol
-        // dns查询耗时
-        templeObj.dnsTime = item.domainLookupEnd - item.domainLookupStart
-        // tcp链接耗时
-        templeObj.tcpTime = item.connectEnd - item.connectStart
-        // 请求时间
-        templeObj.reqTime = item.responseEnd - item.responseStart
-        // 重定向时间
-        templeObj.redirectTime = item.redirectEnd - item.redirectStart
-        // console.log(templeObj)
-        m('source', templeObj)
-        // entryTimesList.push(templeObj)
-      }
-    })
+    if (typeof window.performance === 'function') {
+      let entryList = window.performance.getEntries()
+      entryList.forEach((item, index) => {
+        let templeObj = {}
+        // 'fetch', 'xmlhttprequest'
+        let usefulType = ['script', 'css', 'link', 'img']
+        if (usefulType.indexOf(item.initiatorType) > -1) {
+          templeObj.name = item.name.replace(/#/g, '@').replace(/&/g, '!')
+          templeObj.nextHopProtocol = item.nextHopProtocol
+          // dns查询耗时
+          templeObj.dnsTime = item.domainLookupEnd - item.domainLookupStart
+          // tcp链接耗时
+          templeObj.tcpTime = item.connectEnd - item.connectStart
+          // 请求时间
+          templeObj.reqTime = item.responseEnd - item.responseStart
+          // 重定向时间
+          templeObj.redirectTime = item.redirectEnd - item.redirectStart
+          // console.log(templeObj)
+          m('source', templeObj)
+          // entryTimesList.push(templeObj)
+        }
+      })
+    }
+
     // 循环发送
     // m('source', {'资源': entryTimesList})
   })
@@ -247,7 +187,7 @@ function _init () {
   // })
   a.add('timeline', (m) => { // click
     document.addEventListener('click', function (e) { // 有一个问题 是否需要监听所有类型的时间
-      Log(e)
+      // Log(e)
       m('click', {
         name: e.target.nodeName,
         text: e.target.innerText,
@@ -302,7 +242,7 @@ function _init () {
         url: htmlEncode(window.location.href)})
     })
 
-    function addEvent (a, b, c) {
+    function addEvent (a, b, c) { // 兼容IE
       a.addEventListener(b, c)
     }
   })
@@ -311,8 +251,7 @@ function _init () {
 window.a = a
 export let track = a.track.bind(a)
 export let init = ({uuid, appid}) => {
-  Config.uuid = uuid
+  Config.uuid = uuid || 'no-userid'
   Config.appid = appid
-  Log(Config)
   _init()
 }

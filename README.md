@@ -31,7 +31,7 @@ Using npm:
 $ npm install --save happy-track
 ```
 
-Using cdn:
+Using cdn: CDN有一个好处，永远是最新版本的，但是会占用一个http请求，请各自衡量
 
 ```html
 <script src=""></script>
