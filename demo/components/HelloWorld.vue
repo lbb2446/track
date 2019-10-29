@@ -1,9 +1,13 @@
 <template>
   <div class="hello">
     <h2>随意点击元素</h2>
-    <div v-track="'kbb'" style="height:500px;width:200px">1212</div>
+      <div> 按钮1</div>
+      <div> 按钮2 </div>
+      <div> 按钮3</div>
 
-    _________________
+    <div v-track="'测试'" style="height:500px;width:200px">1212</div>
+    <div>resetToken</div>
+   <div @click="getAjax">测试请求</div>
   </div>
 </template>
 
@@ -13,6 +17,13 @@ export default {
   data () {
     return {
       msg: ''
+    }
+  },
+  methods: {
+    getAjax () {
+      this.$http.get('/query/user?page=1&size=10').then((response) => {
+        console.log(response.data)
+      })
     }
   }
 }

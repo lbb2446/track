@@ -17,7 +17,7 @@ export default class Message {
   }
   init () {
     setInterval(() => {
-      if (this.isupdate === true) {
+      if (this.isupdate === true && window.navigator.onLine === true) {
         this.send()
         this.isupdate = false
       }

@@ -6,6 +6,7 @@ export const getToken = () => {
 
 export const saveToken = token => {
   window.localStorage.setItem(ID_TOKEN_KEY, token)
+  document.cookie = `${ID_TOKEN_KEY}=${token}`// token放在cookies里，测试后端是否可以拿到这个token
 }
 
 export const destroyToken = () => {

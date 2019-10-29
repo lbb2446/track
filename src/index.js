@@ -3,6 +3,10 @@ import {formatDate} from './util/trans'
 import Config from './config'
 // import Message from './model/Message'
 // import Collector from './model/Collector'
+// sentry
+import * as Sentry from '@sentry/browser'
+import * as Integrations from '@sentry/integrations'
+import Vue from 'vue'
 
 import schema from './util/schema'
 import Message from './model/Message'
@@ -118,6 +122,7 @@ function _init () {
           templeObj.reqTime = item.responseEnd - item.responseStart
           // 重定向时间
           templeObj.redirectTime = item.redirectEnd - item.redirectStart
+          templeObj.route = ''
           // console.log(templeObj)
           m('source', templeObj)
           // entryTimesList.push(templeObj)
@@ -128,25 +133,27 @@ function _init () {
     // 循环发送
     // m('source', {'资源': entryTimesList})
   })
-  // a.add('timeline', (m) => { // http
-  //   (function () {
-  //     var origOpen = XMLHttpRequest.prototype.open
-  //     XMLHttpRequest.prototype.open = function (e, f) {
-  //       this.addEventListener('load', function (d) {
-  //         // console.log(this, e, f, d)
-  //         m('ajax', {
-  //           state: this.readyState,
-  //          // result: this.responseText,
-  //           methods: e,
-  //           params: '',
-  //           url: htmlEncode(f),
-  //           elapsedTime: 0
-  //         })
-  //       })
-  //       origOpen.apply(this, arguments)
-  //     }
-  //   })()
-  // })
+  a.add('timeline', (m) => { // http
+    (function () {
+      var origOpen = XMLHttpRequest.prototype.open
+      XMLHttpRequest.prototype.open = function (e, f) {
+        var sendDate = (new Date()).getTime()
+        this.addEventListener('load', function (d) {
+          var receiveDate = (new Date()).getTime()
+          m('ajax', {
+            state: e.currentTarget.status,
+            // result: this.responseText,
+            methods: e,
+            params: '',
+            url: htmlEncode(f),
+            elapsedTime: receiveDate - sendDate
+
+          })
+        })
+        origOpen.apply(this, arguments)
+      }
+    })()
+  })
   a.add('timeline', (m) => { // click
     document.addEventListener('click', function (e) { // 有一个问题 是否需要监听所有类型的时间
       // Log(e)
@@ -212,8 +219,15 @@ function _init () {
 
 window.a = a
 export let track = a.track.bind(a)
-export let init = ({uuid, appid}) => {
+export let init = ({uuid, appid, sentryPublicKey, sentrySecretKey, sentryProjectId}) => {
   Config.uuid = uuid || 'no-userid'
   Config.appid = appid
+  if (sentryPublicKey !== undefined && sentrySecretKey !== undefined && sentryProjectId !== undefined) {
+    Sentry.init({
+      dsn: `http://${sentryPublicKey}:${sentrySecretKey}@101.37.148.124:9000/${sentryProjectId}`,
+      integrations: [new Integrations.Vue({ Vue, attachProps: true })]
+    })
+  }
+
   _init()
 }

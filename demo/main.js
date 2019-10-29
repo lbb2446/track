@@ -5,6 +5,10 @@ import App from './App'
 import router from './router'
 import {track, init} from '../src/index.js' // 有一个use方法和一个指令方法
 // 使用我们自己封装的第三方函数库
+
+import axios from 'axios'
+import VueAxios from 'vue-axios'
+Vue.use(VueAxios, axios)
 // 开始偷取
 function addEvent (element, event, listener) {
   if (element.addEventListener) {
@@ -21,7 +25,7 @@ Vue.directive('track', {
   bind (el, binding) {
     addEvent(el, 'click', () => {
       // console.log(binding.expression)
-      track('directive', binding.expression)
+      track('type', binding.expression)
     })
   },
   unbind: function (el) {
@@ -30,7 +34,7 @@ Vue.directive('track', {
 })
 Vue.config.productionTip = false
 window.onload = () => {
-  init({uuid: 'lbb', appid: '7fa1e8ba0623405c9e494f63a17abf19'})
+  init({uuid: 'yourid', version: 'yourversion', appid: '7fa1e8ba0623405c9e494f63a17abf19', sentryPublicKey: 'aaa', sentrySecretKey: 'nnnn', sentryProjectId: '1'})
 }
 /* eslint-disable no-new */
 new Vue({
