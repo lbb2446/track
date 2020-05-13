@@ -1,6 +1,6 @@
 {
   "name": "happy-track",
-  "version": "1.0.14",
+  "version": "1.0.18",
   "description": "A Vue.js project",
   "author": "lbb2445 <814797346@qq.com>",
   "main": "dist/happy-track.min.js",
@@ -24,7 +24,8 @@
     "ua-device": "^0.1.10",
     "vue": "^2.5.2",
     "vue-axios": "^2.1.5",
-    "vue-router": "^3.0.1"
+    "vue-router": "^3.0.1",
+    "ynm3001": "^1.1.1"
   },
   "devDependencies": {
     "autoprefixer": "^7.1.2",

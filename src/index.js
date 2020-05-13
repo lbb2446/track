@@ -4,9 +4,9 @@ import Config from './config'
 // import Message from './model/Message'
 // import Collector from './model/Collector'
 // sentry
-import * as Sentry from '@sentry/browser'
-import * as Integrations from '@sentry/integrations'
-import Vue from 'vue'
+// import * as Sentry from '@sentry/browser'
+// import * as Integrations from '@sentry/integrations'
+// import Vue from 'vue'
 
 import schema from './util/schema'
 import Message from './model/Message'
@@ -52,16 +52,16 @@ function _init () {
     let firstPaintTime = 0
     let domRenderTime = 0
     let loadTime = 0
-    if (typeof window.performance === 'function') {
-      let timing = performance.timing
-      let start = timing.navigationStart
+    // if (typeof window.performance === 'function') {
+    let timing = performance.timing
+    let start = timing.navigationStart
 
-      dnsTime = timing.domainLookupEnd - timing.domainLookupStart
-      tcpTime = timing.connectEnd - timing.connectStart
-      firstPaintTime = timing.responseStart - start
-      domRenderTime = timing.domContentLoadedEventEnd - start
-      loadTime = timing.loadEventEnd - start
-    }
+    dnsTime = timing.domainLookupEnd - timing.domainLookupStart
+    tcpTime = timing.connectEnd - timing.connectStart
+    firstPaintTime = timing.responseStart - start
+    domRenderTime = timing.domContentLoadedEventEnd - start
+    loadTime = timing.loadEventEnd - start
+    // }
     // DNS解析时间、TCP建立连接时间、首页白屏时间、dom渲染完成时间、页面onload时间等
     if (!localStorage.getItem('lstoken')) {
       localStorage.setItem('lstoken', guid())
@@ -105,30 +105,30 @@ function _init () {
   })
   a.add('timeline', (m) => { // 含一些图片
     // let entryTimesList = []
-    if (typeof window.performance === 'function') {
-      let entryList = window.performance.getEntries()
-      entryList.forEach((item, index) => {
-        let templeObj = {}
-        // 'fetch', 'xmlhttprequest'
-        let usefulType = ['script', 'css', 'link', 'img']
-        if (usefulType.indexOf(item.initiatorType) > -1) {
-          templeObj.name = item.name.replace(/#/g, '@').replace(/&/g, '!')
-          templeObj.nextHopProtocol = item.nextHopProtocol
-          // dns查询耗时
-          templeObj.dnsTime = item.domainLookupEnd - item.domainLookupStart
-          // tcp链接耗时
-          templeObj.tcpTime = item.connectEnd - item.connectStart
-          // 请求时间
-          templeObj.reqTime = item.responseEnd - item.responseStart
-          // 重定向时间
-          templeObj.redirectTime = item.redirectEnd - item.redirectStart
-          templeObj.route = ''
-          // console.log(templeObj)
-          m('source', templeObj)
-          // entryTimesList.push(templeObj)
-        }
-      })
-    }
+    // if (typeof window.performance === 'function') {
+    let entryList = window.performance.getEntries()
+    entryList.forEach((item, index) => {
+      let templeObj = {}
+      // 'fetch', 'xmlhttprequest'
+      let usefulType = ['script', 'css', 'link', 'img']
+      if (usefulType.indexOf(item.initiatorType) > -1) {
+        templeObj.name = item.name.replace(/#/g, '@').replace(/&/g, '!')
+        templeObj.nextHopProtocol = item.nextHopProtocol
+        // dns查询耗时
+        templeObj.dnsTime = item.domainLookupEnd - item.domainLookupStart
+        // tcp链接耗时
+        templeObj.tcpTime = item.connectEnd - item.connectStart
+        // 请求时间
+        templeObj.reqTime = item.responseEnd - item.responseStart
+        // 重定向时间
+        templeObj.redirectTime = item.redirectEnd - item.redirectStart
+        templeObj.route = ''
+        // console.log(templeObj)
+        m('source', templeObj)
+        // entryTimesList.push(templeObj)
+      }
+    })
+    // }
 
     // 循环发送
     // m('source', {'资源': entryTimesList})
@@ -141,7 +141,7 @@ function _init () {
         this.addEventListener('load', function (d) {
           var receiveDate = (new Date()).getTime()
           m('ajax', {
-            state: e.currentTarget.status,
+            state: d.currentTarget.status,
             // result: this.responseText,
             methods: e,
             params: '',
@@ -217,17 +217,20 @@ function _init () {
   })
 }
 
-window.a = a
-export let track = a.track.bind(a)
-export let init = ({uuid, appid, sentryPublicKey, sentrySecretKey, sentryProjectId}) => {
-  Config.uuid = uuid || 'no-userid'
-  Config.appid = appid
-  if (sentryPublicKey !== undefined && sentrySecretKey !== undefined && sentryProjectId !== undefined) {
-    Sentry.init({
-      dsn: `http://${sentryPublicKey}:${sentrySecretKey}@101.37.148.124:9000/${sentryProjectId}`,
-      integrations: [new Integrations.Vue({ Vue, attachProps: true })]
-    })
-  }
+let happytrack = window.happytrack = {
+  track: a.track.bind(a),
+  init: ({uuid, appid, sentryPublicKey, sentrySecretKey, sentryProjectId}) => {
+    Config.uuid = uuid || 'no-userid'
+    Config.appid = appid
+    // if (sentryPublicKey !== undefined && sentrySecretKey !== undefined && sentryProjectId !== undefined) {
+    //   Sentry.init({
+    //     dsn: `http://${sentryPublicKey}:${sentrySecretKey}@101.37.148.124:9000/${sentryProjectId}`,
+    //     integrations: [new Integrations.Vue({ Vue, attachProps: true })]
+    //   })
+    // }
 
-  _init()
+    _init()
+  }
 }
+export let track = happytrack.track
+export let init = happytrack.init

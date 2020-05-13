@@ -15,6 +15,7 @@
 - 采集页面基础数据：加载时间，白屏时间
 - 采集页面的UA信息
 - 在每个页面的停留时间和行为路径
+- 主动可视化埋点
 ## Browser Support
 
 ![Chrome](https://raw.github.com/alrra/browser-logos/master/src/chrome/chrome_48x48.png) | ![Firefox](https://raw.github.com/alrra/browser-logos/master/src/firefox/firefox_48x48.png) | ![Safari](https://raw.github.com/alrra/browser-logos/master/src/safari/safari_48x48.png) | ![Opera](https://raw.github.com/alrra/browser-logos/master/src/opera/opera_48x48.png) | ![Edge](https://raw.github.com/alrra/browser-logos/master/src/edge/edge_48x48.png) | ![IE](https://raw.github.com/alrra/browser-logos/master/src/archive/internet-explorer_9-11/internet-explorer_9-11_48x48.png) |
@@ -34,7 +35,11 @@ $ npm install --save happy-track
 Using cdn: CDN有一个好处，永远是最新版本的，但是会占用一个http请求，请各自衡量
 
 ```html
-<script src=""></script>
+<script src="happy-track.min.js"></script>
+ window.onload = () => {
+        window.happytrack.init({uuid: 'yourid', version: 'yourversion', appid: '7fa1e8ba0623405c9e494f63a17abf19', sentryPublicKey: 'aaa', sentrySecretKey: 'nnnn', sentryProjectId: '1'})
+}
+
 ```
 
 ## Example

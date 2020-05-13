@@ -5,9 +5,11 @@ import App from './App'
 import router from './router'
 import {track, init} from '../src/index.js' // 有一个use方法和一个指令方法
 // 使用我们自己封装的第三方函数库
-
+import {vail} from 'ynm3001'
 import axios from 'axios'
 import VueAxios from 'vue-axios'
+
+console.log(vail('2313123'))
 Vue.use(VueAxios, axios)
 // 开始偷取
 function addEvent (element, event, listener) {

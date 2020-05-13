@@ -1,11 +1,11 @@
 <template>
   <div class="hello">
     <h2>随意点击元素</h2>
-      <div> 按钮1</div>
-      <div> 按钮2 </div>
-      <div> 按钮3</div>
+      <div> 收集请求</div>
+      <div> 收集普通点击事件 </div>
+      <div> 收集动态注册</div>
 
-    <div v-track="'测试'" style="height:500px;width:200px">1212</div>
+    <div v-track="'测试'" style="height:500px;width:200px">收集动态注册按钮</div>
     <div>resetToken</div>
    <div @click="getAjax">测试请求</div>
   </div>

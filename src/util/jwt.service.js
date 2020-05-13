@@ -1,4 +1,4 @@
-const ID_TOKEN_KEY = 'lstoken'
+const ID_TOKEN_KEY = 'token-happy-track'
 
 export const getToken = () => {
   return window.localStorage.getItem(ID_TOKEN_KEY)
